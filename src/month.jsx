@@ -47,6 +47,7 @@ export default class Month extends React.Component {
     setPreSelection: PropTypes.func,
     selected: PropTypes.instanceOf(Date),
     selectingDate: PropTypes.instanceOf(Date),
+    repeated: PropTypes.instanceOf(Date),
     calendarStartDay: PropTypes.number,
     selectsEnd: PropTypes.bool,
     selectsStart: PropTypes.bool,
@@ -191,6 +192,7 @@ export default class Month extends React.Component {
           selectsEnd={this.props.selectsEnd}
           selectsRange={this.props.selectsRange}
           selectsDisabledDaysInRange={this.props.selectsDisabledDaysInRange}
+          repeated={this.props.repeated}
           showWeekNumber={this.props.showWeekNumbers}
           startDate={this.props.startDate}
           endDate={this.props.endDate}

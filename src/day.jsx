@@ -39,6 +39,7 @@ export default class Day extends React.Component {
     selectsRange: PropTypes.bool,
     selectsDisabledDaysInRange: PropTypes.bool,
     startDate: PropTypes.instanceOf(Date),
+    repeated: PropTypes.object,
     renderDayContents: PropTypes.func,
     handleOnKeyDown: PropTypes.func,
     containerRef: PropTypes.oneOfType([
@@ -109,11 +110,15 @@ export default class Day extends React.Component {
   };
 
   isInRange = () => {
-    const { day, startDate, endDate } = this.props;
-    if (!startDate || !endDate) {
+    const { day, startDate, endDate, repeated } = this.props;
+    if ((!startDate || !endDate) && !repeated) {
       return false;
     }
-    return isDayInRange(day, startDate, endDate);
+    if (isDayInRange(day, startDate, endDate)) return true;
+    if (!repeated) return false;
+    return repeated.some((el) => {
+      return el.from && el.to && isDayInRange(day, el.from, el.to);
+    });
   };
 
   isInSelectingRange = () => {
@@ -196,19 +201,28 @@ export default class Day extends React.Component {
   };
 
   isRangeStart = () => {
-    const { day, startDate, endDate } = this.props;
-    if (!startDate || !endDate) {
+    const { day, startDate, endDate, repeated } = this.props;
+    if ((!startDate || !endDate) && !repeated) {
       return false;
     }
-    return isSameDay(startDate, day);
+
+    if (isSameDay(startDate, day)) return true;
+    if (!repeated) return false;
+    return repeated.some((el) => {
+      return el.from && isSameDay(el.from, day);
+    });
   };
 
   isRangeEnd = () => {
-    const { day, startDate, endDate } = this.props;
-    if (!startDate || !endDate) {
+    const { day, startDate, endDate, repeated } = this.props;
+    if ((!startDate || !endDate) && !repeated) {
       return false;
     }
-    return isSameDay(endDate, day);
+    if (isSameDay(endDate, day)) return true;
+    if (!repeated) return false;
+    return repeated.some((el) => {
+      return el.to && isSameDay(el.to, day);
+    });
   };
 
   isWeekend = () => {
@@ -232,7 +246,21 @@ export default class Day extends React.Component {
 
   isCurrentDay = () => this.isSameDay(newDate());
 
-  isSelected = () => this.isSameDay(this.props.selected);
+  isSelected = () => {
+    const { repeated, selected } = this.props;
+    if (!repeated) return this.isSameDay(selected);
+    const days = repeated.reduce(
+      (initial, el) => {
+        if (!el.from && !el.to) return [...initial, el];
+        const res = [...initial];
+        if (el.from) res.push(el.from);
+        if (el.to) res.push(el.to);
+        return res;
+      },
+      [selected]
+    );
+    return days.some((val) => this.isSameDay(val));
+  };
 
   getClassNames = (date) => {
     const dayClassName = this.props.dayClassName

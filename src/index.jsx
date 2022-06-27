@@ -213,6 +213,7 @@ export default class DatePicker extends React.Component {
     required: PropTypes.bool,
     scrollableYearDropdown: PropTypes.bool,
     scrollableMonthYearDropdown: PropTypes.bool,
+    repeated: PropTypes.instanceOf(Date),
     selected: PropTypes.instanceOf(Date),
     selectsEnd: PropTypes.bool,
     selectsStart: PropTypes.bool,
@@ -880,6 +881,7 @@ export default class DatePicker extends React.Component {
         formatWeekDay={this.props.formatWeekDay}
         dropdownMode={this.props.dropdownMode}
         selected={this.props.selected}
+        repeated={this.props.repeated}
         preSelection={this.state.preSelection}
         onSelect={this.handleSelect}
         onWeekSelect={this.props.onWeekSelect}
